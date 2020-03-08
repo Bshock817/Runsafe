@@ -6,8 +6,20 @@
     <title>RunSafe</title>
 </head>
 <body>
-    <h1>Here is the main page of RunSafe</h1>
-    <p>Welcome {{user_data['first_name']}} {{user_data['last_name']}}!</p>
-    <a href="/logout">Logout</a>
+    <h1>RunSafe: Find Your Wolfpack!</h1>
+    <p>Welcome {{user_data['first_name']}} {{user_data['last_name']}}!
+    <a href="/logout"><button>Logout</button></a></p>
+    <div>
+        <p>More of a leader? Create and host your own run event!
+        <a href="/host"><button>Host A Run</button></a></p>
+    </div>
+    <div>
+        <p>Looking for some new friends to run with? Try joining an already established group!
+        <a href="/join"><button>Join A Run</button></a></p>
+    </div>
+    <div>
+        <p>Check out the daily forcast here so that you can plan a run during the best time of the day!
+        <a href="/weather"><button>Whats The Weather</button></a></p>
+    </div>
 </body>
 </html>

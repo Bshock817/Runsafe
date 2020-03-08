@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Runsafe</title>
+</head>
+<body>
+    <h2>Find Some Running Mates!</h2>
+    {% for event in events%}
+    <p>{{event['first_name']}} {{event['last_name']}}'s Event: {{event['content']}}</p>
+    {% endfor %}
+    <p><a href="/return"><button>Dashbboard</button></a>
+
+</html>

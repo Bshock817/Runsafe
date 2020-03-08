@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RunSafe</title>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p>{{message}}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <h2>{{user_data['first_name']}} Run Group!</h2> <p><a href="/return"><button>Dashbboard</button></a>
+    <form action="/on_host" method="POST">
+        <p>Provide details below, such as when, where and distance</p>
+        <textarea name="event_details" cols="30" rows="6"></textarea>
+        <input type="submit" value="Host it!">
+    </form>
+</body>
+</html>

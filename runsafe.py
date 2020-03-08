@@ -75,8 +75,15 @@ def on_login():
 
     return redirect("/login")
 
+@app.route("/return")
+def ret_home():
+    return redirect("/main")
+
 @app.route("/main")
 def main_page():
+    if 'user_id' not in session:
+        return redirect("/")
+
     query = "SELECT * FROM users where id_user = %(uid)s"
     data = {
         'uid': session['user_id']
@@ -84,6 +91,51 @@ def main_page():
     mysql = connectToMySQL('runsafe')
     results = mysql.query_db(query,data)
     return render_template ("main.html", user_data = results[0])
+
+@app.route("/host")
+def host_page():
+    query = "SELECT * FROM users where id_user = %(uid)s"
+    data = {
+        'uid': session['user_id']
+    }
+    mysql = connectToMySQL('runsafe')
+    results = mysql.query_db(query,data)
+    return render_template("host.html", user_data = results[0])
+
+@app.route("/on_host", methods=['POST'])
+def host_event():
+    is_valid = True
+    event_details = request.form['event_details']
+
+    if len(event_details) < 10:
+        is_valid = False
+        flash("Must be at least 10 charaters long")
+
+    if is_valid:
+        query = "INSERT INTO events(host,content,created_at,updated_at) VALUES(%(user_fk)s, %(event)s, NOW(), NOW());"
+        data = {
+            'user_fk':session['user_id'],
+            'event': request.form['event_details'],
+        }
+        mysql = connectToMySQL('runsafe')
+        mysql.query_db(query, data)
+        return redirect("/main")
+    else:
+        return redirect ("/host")
+
+@app.route("/join")
+def join_home():
+    query = "SELECT users.first_name, users.last_name FROM users where id_user = %(uid)s"
+    data = {
+        'uid': session['user_id'],
+    }
+    mysql = connectToMySQL("runsafe")
+    results = mysql.query_db(query, data)
+    if results:
+        query = "SELECT events.id_event, events.host, events.content, users.first_name, users.last_name FROM users JOIN events ON users.id_user = events.host"
+        mysql = connectToMySQL("runsafe")
+        events = mysql.query_db(query)
+        return render_template("join.html", user_data = results[0], events=events)
 
 @app.route("/logout")
 def on_logout():
