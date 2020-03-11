@@ -1,12 +1,27 @@
 from flask import Flask, redirect, render_template, session, request, flash
 from mysqlconn import connectToMySQL
 from flask_bcrypt import Bcrypt
+import requests
+from flask_sqlalchemy import SQLAlchemy		
+from flask_migrate import Migrate	
 import re   
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 app = Flask(__name__)
-app.secret_key = 'runsafety'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///weather.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+migrate = Migrate(app, db)
 
 bcrypt = Bcrypt(app)
+
+app.secret_key = 'runsafety'
+
+class City(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
 
 @app.route("/")
 def home_landing():
@@ -92,9 +107,45 @@ def main_page():
     results = mysql.query_db(query,data)
     return render_template ("main.html", user_data = results[0])
 
-@app.route("/weather")
+@app.route('/weather', methods=['GET', 'POST'])
 def weather_page():
-    return render_template("weather.html")
+    if request.method == 'POST':
+        new_city = request.form.get('city')
+        
+        if new_city:
+            new_city_obj = City(name=new_city)
+
+            db.session.add(new_city_obj)
+            db.session.commit()
+
+    cities = City.query.all()
+
+    url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=271d1234d3f497eed5b1d80a07b3fcd1'
+
+
+
+    weather_data = []
+
+    for city in cities:
+
+        r = requests.get(url.format(city.name)).json()
+
+        weather = {
+            'city' : city.name,
+            'temperature' : r['main']['temp'],
+            'description' : r['weather'][0]['description'],
+            'icon' : r['weather'][0]['icon'],
+        }
+
+        weather_data.append(weather)
+
+
+    return render_template('weather.html', weather_data=weather_data)
+
+# @app.route("/refresh")
+# def refresh():
+#     db.execute('DELETE FROM City')
+#     db.commit()
 
 @app.route("/host")
 def host_page():
@@ -123,7 +174,8 @@ def host_event():
         }
         mysql = connectToMySQL('runsafe')
         mysql.query_db(query, data)
-        return redirect("/main")
+        flash("You Created an Event!")
+        return redirect("/join")
     else:
         return redirect ("/host")
 
@@ -216,6 +268,7 @@ def details_page(event_id):
 def on_logout():
     session.clear()
     return redirect("/")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
