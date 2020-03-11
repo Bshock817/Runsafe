@@ -6,10 +6,25 @@
     <title>Runsafe</title>
 </head>
 <body>
-    <h2>Find Some Running Mates!</h2>
+    <div>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <p>{{message}}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    </div>
+    <h2>Find Some Running Mates!</h2><p><a href="/return"><button>Dashbboard</button></a></p>
     {% for event in events%}
     <p>{{event['first_name']}} {{event['last_name']}}'s Event: {{event['content']}}</p>
+    {% if session['user_id'] == event.host %}
+    <a href="/delete/{{event['id_event']}}"><button>Delete</button></a>
+    <a href="/edit/{{event['id_event']}}"><button>Edit</button></a>
+   {% endif %}
+    <a href="/unjoin/{{event['id_event']}}"><button>leave</button></a>
+    <a href="/joined/{{event['id_event']}}"><button>Join</button></a>
+    <a href="/details/{{event['id_event']}}"><button>Runners</button></a>
     {% endfor %}
-    <p><a href="/return"><button>Dashbboard</button></a>
-
+</body>
 </html>

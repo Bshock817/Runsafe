@@ -92,6 +92,10 @@ def main_page():
     results = mysql.query_db(query,data)
     return render_template ("main.html", user_data = results[0])
 
+@app.route("/weather")
+def weather_page():
+    return render_template("weather.html")
+
 @app.route("/host")
 def host_page():
     query = "SELECT * FROM users where id_user = %(uid)s"
@@ -136,6 +140,77 @@ def join_home():
         mysql = connectToMySQL("runsafe")
         events = mysql.query_db(query)
         return render_template("join.html", user_data = results[0], events=events)
+
+@app.route("/delete/<event_id>")
+def on_delete(event_id):
+    query = "DELETE FROM events WHERE events.id_event = %(event_id)s"
+    data ={'event_id': event_id}
+    mysql = connectToMySQL("runsafe")
+    mysql.query_db(query, data)
+    return redirect("/join")
+
+@app.route("/edit/<event_id>")
+def edit_event(event_id):
+    query = "SELECT events.id_event, events.content FROM events WHERE events.id_event = %(event_id)s"
+    data = {"event_id": event_id}
+    mysql = connectToMySQL("runsafe")
+    event = mysql.query_db(query, data)
+    if event:
+        return render_template("edit.html", event_data = event[0])
+    return redirect("/join")
+
+@app.route("/on_edit/<event_id>", methods=['POST'])
+def on_edit(event_id):
+    query = "UPDATE events SET events.content = %(event)s WHERE events.id_event = %(event_id)s"
+    data = {
+        'event':request.form['event_edit'],
+        'event_id': event_id
+        }
+    mysql = connectToMySQL("runsafe")
+    mysql.query_db(query, data)
+
+    return redirect("/join")
+
+@app.route("/joined/<event_id>")
+def joined_event(event_id):
+    query = "INSERT INTO joined_events (user_id, event_id) VALUES ( %(u_id)s, %(e_id)s)"
+    data = {
+        "u_id":session['user_id'] ,
+        "e_id":event_id ,
+    }
+    mysql = connectToMySQL("runsafe")
+    mysql.query_db(query, data)
+    flash("joined the group")
+    return redirect("/join")
+
+@app.route("/unjoin/<event_id>")
+def unjoined_event(event_id):
+    query = "DELETE FROM joined_events WHERE user_id = %(u_id)s AND event_id = %(e_id)s"
+    data = {
+        "u_id":session['user_id'],
+        "e_id":event_id}
+    mysql = connectToMySQL("runsafe")
+    mysql.query_db(query, data)
+    flash("left the group")
+    return redirect("/join")
+
+@app.route("/details/<event_id>")
+def details_page(event_id):
+    query = " SELECT users.first_name, users.last_name, events.content,events.created_at FROM users join events on users.id_user = events.host WHERE events.id_event = %(eid)s"
+    data = {
+        "eid": event_id
+    }
+    mysql = connectToMySQL("runsafe")
+    event_data = mysql.query_db(query, data)
+    if event_data:
+        event_data=event_data[0]
+    query = "SELECT users.first_name, users.last_name FROM joined_events JOIN users ON users.id_user = joined_events.user_id WHERE joined_events.event_id = %(eid)s"
+    data = {
+        "eid": event_id
+    }
+    mysql = connectToMySQL("runsafe")
+    runner_data = mysql.query_db(query, data)
+    return render_template("details.html", event_data =event_data, runner_data=runner_data)
 
 @app.route("/logout")
 def on_logout():
