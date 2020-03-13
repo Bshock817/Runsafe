@@ -10,14 +10,13 @@
 </head>
 
 <body>
-    
     <section class="hero is-primary">
         <div class="hero-body">
             <div class="container">
                 <h1 class="title">
                     What's the weather like?
                 </h1>
-                <div><a href="/return"><button>Go Back</button></a></p></div>
+                <p><a href="/return">Go Back</a></p>
             </div>
         </div>
     </section>
@@ -36,6 +35,18 @@
                                 </button>
                             </div>
                         </div>
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                {% set message_class = 'is-success' %}
+
+                                {% if category == 'error' %}
+                                    {% set message_class = 'is-danger' %}
+                                {% endif %}
+                                <div class="notification {{ message_class }}">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                        {% endwith %}
                     </form>
                 </div>
             </div>
@@ -62,6 +73,11 @@
                                         <br> {{ weather.description }}
                                     </p>
                                 </div>
+                            </div>
+                            <div class="media-right">
+                                <a href="{{ url_for('delete_city', name=weather.city) }}">
+                                    <button class="deleted">Delete</button>
+                                </a>
                             </div>
                         </article>
                     </div>
