@@ -299,6 +299,7 @@ def on_logout():
     session.clear()
     return redirect("/")
 
+# working 
 
 if __name__ == "__main__":
     app.run(debug=True)
