@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, session, request, flash
+from flask import Flask, redirect, render_template, session, request, flash, url_for
 from mysqlconn import connectToMySQL
 from flask_bcrypt import Bcrypt
 import requests
@@ -22,6 +22,11 @@ app.secret_key = 'runsafety'
 class City(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
+
+def get_weather_data(city):
+    url = f'http://api.openweathermap.org/data/2.5/weather?q={ city }&units=imperial&appid=271d1234d3f497eed5b1d80a07b3fcd1'
+    r = requests.get(url).json()
+    return r
 
 @app.route("/")
 def home_landing():
@@ -111,28 +116,17 @@ def main_page():
     results = mysql.query_db(query,data)
     return render_template ("main.html", user_data = results[0])
 
-@app.route('/weather', methods=['GET', 'POST'])
-def weather_page():
-    if request.method == 'POST':
-        new_city = request.form.get('city')
-        
-        if new_city:
-            new_city_obj = City(name=new_city)
-
-            db.session.add(new_city_obj)
-            db.session.commit()
+@app.route('/weather')
+def get_weather():
 
     cities = City.query.all()
-
-    url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=271d1234d3f497eed5b1d80a07b3fcd1'
-
-
 
     weather_data = []
 
     for city in cities:
 
-        r = requests.get(url.format(city.name)).json()
+        r = r = get_weather_data(city.name)
+        print(r)
 
         weather = {
             'city' : city.name,
@@ -145,6 +139,43 @@ def weather_page():
 
 
     return render_template('weather.html', weather_data=weather_data)
+
+@app.route('/weather', methods=['POST'])
+def weather_post():
+    err_msg = ''
+    new_city = request.form.get('city')
+        
+    if new_city:
+        existing_city = City.query.filter_by(name=new_city).first()
+
+        if not existing_city:
+            new_city_data = get_weather_data(new_city)
+
+            if new_city_data['cod'] == 200:
+                new_city_obj = City(name=new_city)
+
+                db.session.add(new_city_obj)
+                db.session.commit()
+            else:
+                err_msg = 'City does not exist in the world!'
+        else:
+            err_msg = 'City already exists in the database!'
+
+    if err_msg:
+        flash(err_msg, 'error')
+    else:
+        flash('City added succesfully!')
+
+    return redirect(url_for('get_weather'))
+
+@app.route('/deleted/<name>')
+def delete_city(name):
+    city = City.query.filter_by(name=name).first()
+    db.session.delete(city)
+    db.session.commit()
+
+    flash(f'Successfully deleted { city.name }', 'success')
+    return redirect(url_for('get_weather'))
 
 @app.route("/host")
 def host_page():
@@ -268,6 +299,7 @@ def on_logout():
     session.clear()
     return redirect("/")
 
+# working 
 
 if __name__ == "__main__":
     app.run(debug=True)
