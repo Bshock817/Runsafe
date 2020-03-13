@@ -8,7 +8,7 @@ import re
 EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///weather.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///weathers.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -62,6 +62,10 @@ def on_register():
 @app.route("/login")
 def login_page():
     return render_template("login.html")
+
+@app.route("/home")
+def return_home():
+    return render_template("/")
 
 @app.route("/on_login", methods=['POST'])
 def on_login():
@@ -141,11 +145,6 @@ def weather_page():
 
 
     return render_template('weather.html', weather_data=weather_data)
-
-# @app.route("/refresh")
-# def refresh():
-#     db.execute('DELETE FROM City')
-#     db.commit()
 
 @app.route("/host")
 def host_page():
