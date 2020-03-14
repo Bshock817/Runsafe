@@ -3,9 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <title>RunSafe</title>
+    <style>
+        .wrapper{
+          min-width: auto;
+          min-height: 1000px;
+          background-color: yellow;
+        }
+        .container{
+          text-align: center;
+          min-width: auto;
+          min-height: 1000px;
+          background-color: black;
+        }
+         p, label{
+            padding-bottom: 5px;
+            text-align: center;
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .form-group{
+            margin-top: 10px;
+            text-align: center;
+        }
+        h2{
+            text-align: left;
+            color: white;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+      </style>
 </head>
 <body>
+    <div class="wrapper">
+    <div class="container">
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             {% for message in messages %}
@@ -13,11 +45,18 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
-    <h2>{{user_data['first_name']}} Run Group!</h2> <p><a href="/return"><button>Dashbboard</button></a>
+    <div class="row">
+        <div class="col-10"><h2>{{user_data['first_name']}}'s Run Group!</h2></div>
+        <div class="col-2"><a href="/return"><button class="btn btn-warning">Dashbboard</button></a></div>
+    </div>
     <form action="/on_host" method="POST">
-        <p>Provide details below, such as when, where and distance</p>
-        <textarea name="event_details" cols="30" rows="6"></textarea>
-        <input type="submit" value="Host it!">
+        <div class="form-group">
+        <label for="event_details"><h5>Enter details below, such as when, where and distance</h5></label>
+        <textarea class="form-control" name="event_details" rows="6"></textarea>
+        </div>
+        <input type="submit" class="btn btn-warning" value="Host it!">
     </form>
+    </div>
+    </div>
 </body>
 </html>
