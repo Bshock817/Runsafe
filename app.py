@@ -68,10 +68,6 @@ def on_register():
 def login_page():
     return render_template("login.html")
 
-@app.route("/home")
-def return_home():
-    return render_template("/")
-
 @app.route("/on_login", methods=['POST'])
 def on_login():
     is_valid = True
