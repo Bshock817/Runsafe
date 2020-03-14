@@ -3,28 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <title>Runsafe</title>
+    <style>
+    .wrapper{
+        min-width: auto;
+        min-height: 1000px;
+        background-color: yellow;
+      }
+      .container{
+        min-width: auto;
+        min-height: 1000px;
+        background-color: black;
+      }
+      h2, p, h6, .card-title {
+          padding-bottom: 5px;
+          text-align: center;
+          color: white;
+          font-family: Arial, Helvetica, sans-serif;
+      }
+      .card-body{
+          background-color: black;
+          text-align: center;
+          font-family: Arial, Helvetica, sans-serif;
+      }
+      .card{
+          margin: 10px;
+      }
+
+    </style>
 </head>
 <body>
     <div>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <p>{{message}}</p>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
+    <div class="wrapper">
+        <div class="container">
+            <h2>Find Some Running Mates!</h2><p><a href="/return"><button class="btn btn-warning">Dashbboard</button></a></p>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p>{{message}}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <div class="row">
+                {% for event in events%}
+                <div class="col-sm-12">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">{{event['first_name']}} {{event['last_name']}}'s Event</h5>
+                      <h6 class="card-text"> {{event['content']}}</h6>
+                      {% if session['user_id'] == event.host %}
+                      <a href="/delete/{{event['id_event']}}"><button class="btn btn-warning">Delete</button></a>
+                      <a href="/edit/{{event['id_event']}}"><button class="btn btn-warning">Edit</button></a>
+                      {% endif %}
+                      <a href="/unjoin/{{event['id_event']}}"><button class="btn btn-warning">leave</button></a>
+                      <a href="/joined/{{event['id_event']}}"><button class="btn btn-warning">Join</button></a>
+                      <a href="/details/{{event['id_event']}}"><button class="btn btn-warning">Runners</button></a>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+            </div>
     </div>
-    <h2>Find Some Running Mates!</h2><p><a href="/return"><button>Dashbboard</button></a></p>
-    {% for event in events%}
-    <p>{{event['first_name']}} {{event['last_name']}}'s Event: {{event['content']}}</p>
-    {% if session['user_id'] == event.host %}
-    <a href="/delete/{{event['id_event']}}"><button>Delete</button></a>
-    <a href="/edit/{{event['id_event']}}"><button>Edit</button></a>
-   {% endif %}
-    <a href="/unjoin/{{event['id_event']}}"><button>leave</button></a>
-    <a href="/joined/{{event['id_event']}}"><button>Join</button></a>
-    <a href="/details/{{event['id_event']}}"><button>Runners</button></a>
-    {% endfor %}
 </body>
 </html>
