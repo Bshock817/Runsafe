@@ -36,8 +36,8 @@
         <div class="container">
             <form action="/on_edit/{{event_data['id_event']}}", method="POST">
             <div class="form-group">
-                <label for="event_details"><h2>Edit Event!</h2></label>
-                <textarea class="form-control" name="event_details" rows="6">{{event_data['content']}}</textarea>
+                <label for="event_edit"><h2>Edit Event!</h2></label>
+                <textarea class="form-control" name="event_edit" rows="6">{{event_data['content']}}</textarea>
             </div>
         <input type="submit" class="btn btn-warning" value="Update">
     </form>
