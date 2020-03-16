@@ -288,7 +288,128 @@ def details_page(event_id):
     }
     mysql = connectToMySQL("runsafe")
     runner_data = mysql.query_db(query, data)
-    return render_template("details.html", event_data =event_data, runner_data=runner_data)
+    query = "SELECT users.first_name, users.last_name, messages.content FROM joined_events JOIN users ON users.id_user = joined_events.user_id join messages on joined_event_id = %(eid)s"
+    data = {
+        "eid": event_id
+    }
+    mysql = connectToMySQL("runsafe")
+    messages = mysql.query_db(query,data)
+
+    return render_template("details.html", event_data =event_data, runner_data=runner_data, messages=messages)
+
+@app.route("/chat", methods=['POST'])
+def on_chat():
+    is_valid = True
+    chat_content = request.form['chat_content']
+    if len(chat_content) < 1:
+        is_valid = False
+        flash("Must be at least 1 charater long")
+
+    if len(chat_content) > 255:
+        is_valid = False
+        flash("Must be less than 255 charaters")
+    
+    if is_valid:
+        query = "INSERT INTO messages (joined_event_id, joined_user_id,content,created_at, updated_at) VALUES(%(juser_fk)s, %(chat)s, NOW(), NOW());"
+
+        data = {
+            'juser_fk':session['user_id'],
+            'chat': request.form['chat_content'],
+        }
+        mysql = connectToMySQL('runsafe')
+        mysql.query_db(query, data)
+
+@app.route("/friend")
+def friend():
+    query = "SELECT users.id_user, users.first_name, users.last_name FROM users"
+    mysql = connectToMySQL("runsafe")
+    all_users = mysql.query_db(query)
+
+    query = "SELECT * FROM friends WHERE friender = %(uid)s"
+    data = {
+        "uid": session['user_id']
+    }
+    mysql = connectToMySQL("runsafe")
+    all_user_id_friended = [info['friended'] for info in mysql.query_db(query, data)]
+
+    friended = []
+    not_friended = []
+
+    for user in all_users:
+        if user['id_user'] == session['user_id']:
+            continue
+
+        if user['id_user'] in all_user_id_friended:
+            friended.append(user)
+        else:
+            not_friended.append(user)
+    return render_template("friends.html",friended=friended,not_friended=not_friended )
+
+@app.route("/on_friend/<user_id>")
+def on_friend(user_id):
+    query = "INSERT INTO friends (friender, friended) VALUES(%(friender)s, %(friended)s)"
+    data ={
+        'friended':user_id, 'friender':session['user_id']
+    }
+    mysql = connectToMySQL("runsafe")
+    mysql.query_db(query,data)
+    return redirect("/friend")
+
+@app.route("/un_friend/<user_id>")
+def un_friend(user_id):
+    query = "DELETE FROM friends WHERE friender = %(friender)s AND friended = %(friended)s"
+    data ={
+        'friended':user_id, 'friender':session['user_id']
+    }
+    mysql = connectToMySQL("runsafe")
+    mysql.query_db(query,data)
+    return redirect("/friend")
+
+@app.route("/rate")
+def rate():
+    query = "SELECT users.id_user, users.first_name, users.last_name FROM users"
+    mysql = connectToMySQL("runsafe")
+    all_users = mysql.query_db(query)
+
+    query = "SELECT * FROM rates WHERE rater = %(uid)s"
+    data = {
+        "uid": session['user_id']
+    }
+    mysql = connectToMySQL("runsafe")
+    all_user_id_rated = [info['rated'] for info in mysql.query_db(query, data)]
+
+    hasnt_rated = []
+    good_rating = []
+    bad_rating = []
+
+    for user in all_users:
+        if user['id_user'] == session['user_id']:
+            hasnt_rated.append(user)
+        elif user['id_user'] in all_user_id_rated:
+            good_rating.append(user)
+        else:
+            bad_rating.append(user)
+    return render_template("rate.html",hasnt_rated=hasnt_rated, good_rating=good_rating,bad_rating=bad_rating)
+
+@app.route("/on_rate/<user_id>")
+def on_rate(user_id):
+    query = "INSERT INTO rates (rater, rated) VALUES(%(rater)s, %(rated)s)"
+    data ={
+        'rated':user_id, 'rater':session['user_id']
+    }
+    mysql = connectToMySQL("runsafe")
+    mysql.query_db(query,data)
+    return redirect("/rate")
+
+@app.route("/un_rate/<user_id>")
+def un_rate(user_id):
+    query = "DELETE FROM rates WHERE rater = %(rater)s AND rated = %(rated)s"
+    data ={
+        'rated':user_id, 'rater':session['user_id']
+    }
+    mysql = connectToMySQL("runsafe")
+    mysql.query_db(query,data)
+    return redirect("/rate")
 
 @app.route("/logout")
 def on_logout():

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.css" />
+    <title>Friend a user</title>
+    <style>
+      .wrapper{
+        min-width: auto;
+        min-height: 1000px;
+        background-color: yellow;
+      }
+      .container{
+        min-width: auto;
+        min-height: 1000px;
+        background-color: black;
+        text-align: center;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      h2{
+          color: white;
+      }
+      tbody{
+          background-color: gray;
+          color: white;
+      }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+    <div class="container">
+    <h2>Users</h2>
+    <table class="table table-bordered table-dark">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">First</th>
+            <th scope="col">Last</th>
+            <th scope="col">Action</th>
+            <th scope="col">Rate</th>
+          </tr>
+        </thead>
+        {% for user in not_friended %}
+        <tbody>
+          <tr>
+            <th scope="row"></th>
+            <td>{{user['first_name']}}</td>
+            <td>{{user['last_name']}}</td>
+            <td><a href="/on_friend/{{user['id_user']}}"><button class="btn btn-success">friend</button></a></td>
+            <td><a href="/rate"><button class="btn btn-warning">Rate</button></a></td>
+          </tr>
+          {%endfor%}
+        </tbody>
+    </table>
+    <h2>Friends</h2>
+    <table class="table table-bordered table-dark">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">First</th>
+            <th scope="col">Last</th>
+            <th scope="col">Action</th>
+            <th scope="col">Rate</th>
+          </tr>
+        </thead>
+        {% for user in friended %}
+        <tbody>
+          <tr>
+            <th scope="row"></th>
+            <td>{{user['first_name']}}</td>
+            <td>{{user['last_name']}}</td>
+            <td><a href="/un_friend/{{user['id_user']}}"><button class="btn btn-danger">Unfriend</button></a></td>
+            <td><a href="/rate"><button class="btn btn-warning">Rate</button></a></td>
+          </tr>
+        {%endfor%}
+        </tbody>
+    </table>
+    <a href="/main"><button class="btn btn-warning">Go Back</button></a>
+    </div>
+    </div>
+</body>
+</html>
