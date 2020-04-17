@@ -1,8 +1,8 @@
 import pymysql.cursors
 class MySQLConnection:
     def __init__(self, db):
-        connection = pymysql.connect(host = 'localhost',
-                                    user = 'brian', # change the user and password as needed
+        connection = pymysql.connect(host = 'ec2-18-219-203-60.us-east-2.compute.amazonaws.com',
+                                    user = 'brian  ', # change the user and password as needed
                                     password = 'asap', 
                                     db = db,
                                     charset = 'utf8mb4',
