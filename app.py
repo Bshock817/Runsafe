@@ -417,6 +417,7 @@ def on_logout():
     return redirect("/")
 
 # working 
+# moved folders to projects.
 
 if __name__ == "__main__":
     app.run(debug=True)
