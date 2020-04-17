@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale 1.0">
+    <meta http-equiv="X-UA-Compatible" content="google chrome">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <title>Chat</title>
+    <style>
+      .wrapper{
+        min-width: auto;
+        min-height: 1000px;
+        background-color: yellow;
+      }
+      .container{
+        min-width: auto;
+        min-height: 1000px;
+        background-color: black;
+        text-align: center;
+        color: white;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <p>{{message}}</p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <h1>Chatroom!</h1>
+        <p>Chat with your wolfpack</p>
+        <a href="/join"><button class="btn btn-warning">Go Back</button></button></a>
+        <div>
+        <form action="/on_chat" method="POST">
+            <div class="form-group">
+                <label for="chat_content"><h2>Chat away!</h2></label>
+                <textarea class="form-control" name="chat_content" rows="6"></textarea>
+            </div>
+            <input type="submit" class="btn btn-warning" value="Post!">
+        </form>
+        </div>
+        <hr>
+        {% for chat in chats %}
+        <h1>{{chat['first_name']}} {{chat['last_name']}} Says: {{chat['content']}}</h1>
+        {%endfor%}
+    </div>
+    </div>
+</body>
+</html>

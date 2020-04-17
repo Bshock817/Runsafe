@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <title>Runners</title>
+    <style>
+      .wrapper{
+        min-width: auto;
+        min-height: 1000px;
+        background-color: yellow;
+      }
+      .container{
+        min-width: auto;
+        min-height: 1000px;
+        background-color: black;
+        text-align: center;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      h1,h2,h3{
+        color: white;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      hr{
+        border: white 2px solid;
+      }
+    </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="container">
+    <h1>Host: {{event_data['first_name']}} {{event_data['last_name']}}</h1>
+    <h3>Event created at: {{event_data['created_at']}}</h3>
+    <h3> The Wolfpack! </h3>
+      <p></p><a href="/join"><button class="btn btn-warning">Go Back</button></a></p>
+      <table class="table table-striped table-dark">
+        <thead>
+          <tr>
+            <th scope="col">Wolfpack</th>
+            <th scope="col">First</th>
+            <th scope="col">Last</th>
+          </tr>
+        </thead>
+        {% for user in runner_data %}
+        <tbody>
+          <tr>
+            <td>Runner</td>
+            <td>{{user['first_name']}}</td>
+            <td>{{user['last_name']}}</td>
+          </tr>
+          {%endfor%}
+        </tbody>
+        </table>
+      </div>
+    </div>
+</body>
+</html>
